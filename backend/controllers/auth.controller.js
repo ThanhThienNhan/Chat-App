@@ -1,5 +1,9 @@
-const signup=(req,res)=>{
-    console.log("signupUser");
+const signup=async(req,res)=>{
+    try{
+        const {fullName,username,password,confirmPassword,gender}=req.body;
+    }catch(error){
+
+    }
 }
 
 const login=(req,res)=>{
