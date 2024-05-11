@@ -6,7 +6,7 @@ const{
     logout
 }=require("../controllers/auth.controller")
 
-router.get("/signup",signup);
+router.post("/signup",signup);
 
 router.get("/login",login);
 
