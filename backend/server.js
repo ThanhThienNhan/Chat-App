@@ -2,6 +2,7 @@ const express= require('express');
 const dotenv=require("dotenv");
 
 const authRoutes=require("./routes/auth.routes");
+const messageRoutes=require("./routes/message.routes")
 const connectToMongoDB = require('./db/connectToMongoDB');
 
 const app =express();
@@ -15,7 +16,8 @@ app.use(express.json());//to parse requests with JSON payloads (from req.body)
 //     res.send("Hello World!")
 // })
 
-app.use("/api/auth",authRoutes)
+app.use("/api/auth",authRoutes);
+app.use("/api/messages",messageRoutes);
 
 app.listen(PORT,()=>{
     connectToMongoDB();
