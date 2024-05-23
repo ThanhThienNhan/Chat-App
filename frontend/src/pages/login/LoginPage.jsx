@@ -37,7 +37,7 @@ const LoginPage = () => {
 
           <div>
             <label className='label p-2'>
-              <span className='text-base label-text'>Username</span>
+              <span className='text-base label-text'>Password</span>
             </label>
             <input type='password' placeholder='Enter password' className='w-full input input-bordered h-10'
               value={inputs.password} onChange={(e) => setInputs({...inputs,password: e.target.value} )}></input>
