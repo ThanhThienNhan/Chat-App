@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Conversation from './Conversation';
 import useGetConversations from '../../hooks/useGetConversations';
 import SearchInput from './SearchInput';
+import { toast } from 'react-toastify';
 
 function Conversations() {
   const { loading, conversations } = useGetConversations();
@@ -15,6 +16,12 @@ function Conversations() {
         conversation.fullName.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setFilteredConversations(filtered);
+      if (filtered.length === 0) {
+        toast.error("No users found",{
+          position:"bottom-right"
+        }
+        );
+      }
     }
   };
 
