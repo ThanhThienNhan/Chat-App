@@ -1,10 +1,12 @@
-import React, { useState } from 'react'
-import { BsSend } from 'react-icons/bs'
+import React, { useState } from 'react';
+import { BsSend } from 'react-icons/bs';
+import { GrEmoji } from 'react-icons/gr';
+import EmojiPicker from 'emoji-picker-react';
 import useSendMessage from '../../hooks/useSendMessage';
 
 function MessageInput() {
-
     const [message, setMessage] = useState("");
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
     const { loading, sendMessage } = useSendMessage();
 
@@ -15,7 +17,12 @@ function MessageInput() {
         }
         await sendMessage(message);
         setMessage("");
-    }
+    };
+
+    const onEmojiClick = (emojiObject) => {
+        setMessage((prevMessage) => prevMessage + emojiObject.emoji);
+        setShowEmojiPicker(false);
+    };
 
     return (
         <form className='px-4 my-3' onSubmit={handleSubmit}>
@@ -27,12 +34,20 @@ function MessageInput() {
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                 />
-                <button type='submit' className='absolute inset-y-0 end-0 flex items-center pe-3'>
-                    {loading?<div className='loading loading-spinner'></div>:<BsSend />}
+                <button type='button' className='absolute inset-y-0 end-10 flex items-center pe-3' onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
+                    <GrEmoji/>
                 </button>
+                <button type='submit' className='absolute inset-y-0 end-0 flex items-center pe-3'>
+                    {loading ? <div className='loading loading-spinner'></div> : <BsSend />}
+                </button>
+                {showEmojiPicker && (
+                    <div className='absolute bottom-full right-0'>
+                        <EmojiPicker width={300} height={350} onEmojiClick={onEmojiClick} />
+                    </div>
+                )}
             </div>
         </form>
-    )
+    );
 }
 
-export default MessageInput
+export default MessageInput;
