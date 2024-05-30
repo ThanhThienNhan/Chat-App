@@ -21,7 +21,7 @@ function MessageInput() {
 
     const onEmojiClick = (emojiObject) => {
         setMessage((prevMessage) => prevMessage + emojiObject.emoji);
-        setShowEmojiPicker(false);
+        //setShowEmojiPicker(false);
     };
 
     return (
