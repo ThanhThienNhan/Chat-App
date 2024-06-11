@@ -21,6 +21,13 @@ export const SocketContextProvider = ({ children }) => {
                 }
             });
 
+            //for development
+            // const socket = io("http://localhost:5000", {
+            //     query: {
+            //         userId: authUser._id
+            //     }
+            // });
+
             setSocket(socket);
 
             socket.on("getOnlineUsers", (users) => {

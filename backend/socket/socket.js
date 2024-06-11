@@ -1,6 +1,7 @@
 const { Server } = require('socket.io');
 const http = require('http');
 const express = require('express')
+const Message=require("../models/message.model")
 
 const app = express();
 
@@ -28,11 +29,28 @@ io.on('connection', (socket) => {
 
     io.emit("getOnlineUsers", Object.keys(userSocketMap));
 
+    socket.on('messageSeen', async ({ messageId, senderId }) => {
+        try {
+            // Update message seen status in the database
+            await Message.findByIdAndUpdate(messageId, { seen: true });
+
+            // Notify the sender
+            const receiverSocketId = getReceiverSocketId(senderId);
+            if (receiverSocketId) {
+                io.to(receiverSocketId).emit('notifyMessageSeen', { messageId });
+            }
+        } catch (error) {
+            console.error('Error marking message as seen:', error);
+        }
+    });
+
     socket.on('disconnect', () => {
         console.log('user disconnected', socket.id);
         delete userSocketMap[userId];
         io.emit("getOnlineUsers", Object.keys(userSocketMap));
     })
+
+
 })
 
 module.exports = { app, io, server,getReceiverSocketId };
