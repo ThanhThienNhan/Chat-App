@@ -1,35 +1,42 @@
-const Conversation = require("../models/conversation.model")
-const Message = require("../models/message.model")
-const {getReceiverSocketId,io} =require('../socket/socket')
+const Conversation = require("../models/conversation.model");
+const Message = require("../models/message.model");
+const { getReceiverSocketId, io } = require('../socket/socket');
+const cloudinary = require('cloudinary').v2;
 
 const sendMessage = async (req, res) => {
     try {
-        //const message=req.body.message
         const { message } = req.body;
+        const file=req.files?.image
+
         const { id: receiverId } = req.params;
         const senderId = req.user._id;
 
         let conversation = await Conversation.findOne({
-            participants: {
-                $all: [senderId, receiverId]
-            },
-        })
+            participants: { $all: [senderId, receiverId] }
+        });
 
         if (!conversation) {
             conversation = await Conversation.create({
-                participants: [senderId, receiverId],
-            })
+                participants: [senderId, receiverId]
+            });
+        }
+
+        let imageUrl = "";
+        if (file) {
+            const uploadResponse = await cloudinary.uploader.upload(file.tempFilePath, {
+                folder: 'chatapp',
+            });
+            imageUrl = uploadResponse.url;
         }
 
         const newMessage = new Message({
             senderId,
             receiverId,
             message,
-        })
+            img: imageUrl||""
+        });
 
-        if (newMessage) {
-            conversation.messages.push(newMessage._id);
-        }
+        conversation.messages.push(newMessage._id);
 
         await Promise.all([conversation.save(), newMessage.save()]);
 
@@ -39,12 +46,12 @@ const sendMessage = async (req, res) => {
         }
 
         res.status(201).json(newMessage);
-
     } catch (error) {
-        console.log("Error in sendMessage controller: ", error.message)
-        res.status(500).json({ message: "Internal server error" })
+        console.log("Error in sendMessage controller: ", error.message);
+        res.status(500).json({ message: "Internal server error" });
     }
-}
+};
+
 
 const getMessages = async (req, res) => {
     try {
@@ -62,11 +69,10 @@ const getMessages = async (req, res) => {
         const messages = conversation.messages;
 
         res.status(200).json(messages);
-
     } catch (error) {
-        console.log("Error in getMessages controller: ", error.message)
-        res.status(500).json({ message: "Internal server error" })
+        console.log("Error in getMessages controller: ", error.message);
+        res.status(500).json({ message: "Internal server error" });
     }
-}
+};
 
 module.exports = { getMessages, sendMessage };

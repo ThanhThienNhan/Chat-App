@@ -1,5 +1,4 @@
-import React from 'react';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useAuthContext } from '../../context/AuthContext';
 import useConversation from '../../zustand/useConversation';
 import { extractTime } from '../../utils/extractTime';
@@ -24,7 +23,6 @@ function Message({ message }) {
         }
     }, [message, fromMe, socket]);
 
-
     return (
         <div className={`chat ${chatClassName}`}>
             <div className='chat-image avatar'>
@@ -32,8 +30,14 @@ function Message({ message }) {
                     <img alt='Chat bubble' src={profilePic} />
                 </div>
             </div>
-            <div className={`chat-bubble text-white pb-2 ${bubbleBgColor} ${shakeClass}`}>{message.message}</div>
-            <div className='chat-footer text-white py-1  text-xs flex gap-1 items-center'>
+            <div className={`chat-bubble text-white pb-2 ${bubbleBgColor} ${shakeClass}`}>
+                {message.img ? (
+                    <img src={message.img} alt='Message' className='rounded-md' width={200}/>
+                ) : (
+                    message.message
+                )}
+            </div>
+            <div className='chat-footer text-white py-1 text-xs flex gap-1 items-center'>
                 <div className='opacity-50'>
                     {formattedTime}
                 </div>
