@@ -2,11 +2,12 @@ const Conversation = require("../models/conversation.model");
 const Message = require("../models/message.model");
 const { getReceiverSocketId, io } = require('../socket/socket');
 const cloudinary = require('cloudinary').v2;
+const fs = require('fs');
 
 const sendMessage = async (req, res) => {
     try {
         const { message } = req.body;
-        const file=req.files?.image
+        const file = req.files?.image
 
         const { id: receiverId } = req.params;
         const senderId = req.user._id;
@@ -27,13 +28,20 @@ const sendMessage = async (req, res) => {
                 folder: 'chatapp',
             });
             imageUrl = uploadResponse.url;
+            
+            // Clean up the temporary file
+            fs.unlink(file.tempFilePath, (err) => {
+                if (err) {
+                    console.error('Failed to delete temp file:', err);
+                }
+            });
         }
 
         const newMessage = new Message({
             senderId,
             receiverId,
             message,
-            img: imageUrl||""
+            img: imageUrl || ""
         });
 
         conversation.messages.push(newMessage._id);
